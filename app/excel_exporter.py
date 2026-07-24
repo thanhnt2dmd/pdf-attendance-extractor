@@ -36,7 +36,7 @@ def calculate_summary(df):
                     )
 
                     standard_in = datetime.strptime(
-                        "08:30",
+                        "08:39",
                         "%H:%M"
                     )
 
