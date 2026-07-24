@@ -8,6 +8,7 @@ import uuid
 
 from app.parser import parse_pdf
 from app.excel_exporter import export_excel
+from app.utils import logger
 
 app = FastAPI(
     title="Attendance Extractor API"
@@ -36,6 +37,7 @@ async def root():
 @app.post("/extract")
 async def extract(file: UploadFile = File(...)):
 
+    logger.info(f"Received file: {file.filename}")
     pdf_name = f"{uuid.uuid4()}.pdf"
 
     pdf_path = os.path.join(
@@ -46,7 +48,14 @@ async def extract(file: UploadFile = File(...)):
     with open(pdf_path, "wb") as f:
         f.write(await file.read())
 
+    logger.info(f"PDF saved: {pdf_path}")
+
+    logger.info("Processing PDF...")
     attendance_data = parse_pdf(pdf_path)
+
+    logger.info(
+        f"Extracted {len(attendance_data)} attendance records"
+    )
 
     excel_path = os.path.join(
         OUTPUT_DIR,
@@ -56,11 +65,17 @@ async def extract(file: UploadFile = File(...)):
         )
     )
 
+    logger.info("Generating Excel file...")
+
     export_excel(
         attendance_data,
         excel_path
     )
 
+    logger.info(
+        f"Excel generated successfully: {excel_path}"
+    )
+    
     return FileResponse(
         excel_path,
         filename="attendance.xlsx"
