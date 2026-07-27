@@ -9,7 +9,7 @@ import uuid
 from app.parser import parse_pdf
 from app.excel_exporter import export_excel
 from app.utils import logger
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 app = FastAPI(
     title="Attendance Extractor API"
@@ -54,16 +54,23 @@ async def extract(file: UploadFile = File(...)):
     logger.info("Processing PDF...")
     attendance_data = parse_pdf(pdf_path)
 
+    department = "UNKNOWN"
+    if attendance_data:
+        department = attendance_data[0].get(
+            "department",
+            "UNKNOWN"
+        )
+    
     logger.info(
         f"Extracted {len(attendance_data)} attendance records"
     )
 
-    timestamp = datetime.now().strftime(
+    timestamp = datetime.now(timezone(timedelta(hours=7))).strftime(
         "%Y%m%d_%H%M%S"
     )
 
     excel_filename = (
-        f"attendance_{timestamp}.xlsx"
+        f"attendance_{department}_{timestamp}.xlsx"
     )
 
     excel_path = os.path.join(
