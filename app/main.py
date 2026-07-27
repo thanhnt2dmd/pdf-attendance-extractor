@@ -92,5 +92,5 @@ async def extract(file: UploadFile = File(...)):
     
     return FileResponse(
         excel_path,
-        filename="attendance.xlsx"
+        filename=excel_filename
     )
