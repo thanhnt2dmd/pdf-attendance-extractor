@@ -21,16 +21,30 @@ def parse_pdf(pdf_path):
 
         employee_id = parts[1]
 
-        dmd_index = parts.index("DMD")
+        # dmd_index = parts.index("DMD")
 
-        employee_name = " ".join(parts[2:dmd_index])
+        # employee_name = " ".join(parts[2:dmd_index])
 
-        department = "DMD"
+        # department = "DMD"
+        
+        department_index = None
 
-        date = parts[dmd_index + 1]
-        day = parts[dmd_index + 2]
+        for i in range(2, len(parts)):
+            if re.match(r"\d{2}/\d{2}/\d{4}", parts[i]):
+                department_index = i - 1
+                break
 
-        remain = parts[dmd_index + 3:]
+        if department_index is None:
+            continue
+
+        employee_name = " ".join(parts[2:department_index])
+
+        department = parts[department_index]
+
+        date = parts[department_index + 1]
+        day = parts[department_index + 2]
+
+        remain = parts[department_index + 3:]
 
         check_in = ""
         check_out = ""
