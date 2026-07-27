@@ -9,6 +9,7 @@ import uuid
 from app.parser import parse_pdf
 from app.excel_exporter import export_excel
 from app.utils import logger
+from datetime import datetime
 
 app = FastAPI(
     title="Attendance Extractor API"
@@ -57,13 +58,26 @@ async def extract(file: UploadFile = File(...)):
         f"Extracted {len(attendance_data)} attendance records"
     )
 
+    timestamp = datetime.now().strftime(
+        "%Y%m%d_%H%M%S"
+    )
+
+    excel_filename = (
+        f"attendance_{timestamp}.xlsx"
+    )
+
     excel_path = os.path.join(
         OUTPUT_DIR,
-        pdf_name.replace(
-            ".pdf",
-            ".xlsx"
-        )
+        excel_filename
     )
+
+    # excel_path = os.path.join(
+    #     OUTPUT_DIR,
+    #     pdf_name.replace(
+    #         ".pdf",
+    #         ".xlsx"
+    #     )
+    # )
 
     logger.info("Generating Excel file...")
 
